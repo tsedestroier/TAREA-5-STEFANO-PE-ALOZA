@@ -1,53 +1,75 @@
-# 🚀 Tarea: Sistemas Embebidos (ESP32 + FreeRTOS + I2C + UART)
+# Tarea: Sistemas Embebidos (ESP32 + FreeRTOS + I2C + UART)
 
-Repositorio oficial con la implementación de los ejercicios prácticos desarrollados para la placa ESP32, simulados en **Wokwi** y compilados mediante **PlatformIO**. La estructura principal se encuentra organizada dentro de la carpeta **`DEBER5_SE/`**.
-
----
-
-## 📂 Índice y Acceso Rápido a los Ejercicios
-
-Haz clic en cualquier ejercicio para revisar directamente su código fuente:
-
-* **[Ejercicio 1: Sistema de Comandos por UART2](./DEBER5_SE/TAREA_5/)**
-* **[Ejercicio 2: Multitarea con FreeRTOS](./DEBER5_SE/TAREA_52/)**
-* **[Ejercicio 3: Sistema Integrado (UART + FreeRTOS + I2C + OLED)](./DEBER5_SE/TAREA_53/)**
+**Estudiante:** Stefano Peñaloza  
+**Enlace al Repositorio de GitHub:** [*(Insertar aquí el enlace a tu repositorio público de GitHub)*]  
+**Simulación en Wokwi:** [Ver Simulación](https://wokwi.com/projects/470989175279998977)  
+**Video de Demostración:** [Ver en YouTube](https://youtu.be/I-_zX-c1B3I)
 
 ---
 
-## 🧠 Explicación Detallada del Funcionamiento del Código
-
-### 1. [Ejercicio 1: Sistema de Comandos por UART2](./DEBER5_SE/TAREA_5/)
-* **Funcionamiento técnico:** Este módulo implementa un intérprete de comandos robusto utilizando exclusivamente **UART2** del ESP32 con los drivers nativos de ESP-IDF (`driver/uart.h`).
-* **Lectura no bloqueante:** Emplea un búfer de recepción y un tiempo de espera controlado (`uart_read_bytes`) que evita que el microcontrolador se quede congelado esperando datos, permitiendo que el bucle principal ceda tiempo de procesamiento al sistema operativo.
-* **Comandos soportados:**
-  * `status`: Devuelve un reporte completo del estado del sistema, salud de los procesos, estado actual del LED y el tiempo activo (*uptime*).
-  * `led on` / `led off`: Controla de manera directa el nivel lógico y físico del pin del LED.
-  * `info`: Proporciona detalles técnicos de la interfaz (baudios, puerto y contador de comandos procesados).
-  * `reset`: Reinicia las variables internas y contadores lógicos de manera segura sin reiniciar el microcontrolador.
-
-### 2. [Ejercicio 2: Multitarea con FreeRTOS](./DEBER5_SE/TAREA_52/)
-* **Funcionamiento técnico:** Se enfoca en la distribución de cargas de trabajo concurrentes utilizando el núcleo de tiempo real **FreeRTOS**.
-* **Estrategia de hilos:** Divide las responsabilidades del sistema en tareas independientes ejecutadas de manera paralela, priorizando el uso de recursos y asegurando que las rutinas de lectura de sensores y control no interfieran con la comunicación serie.
-
-### 3. [Ejercicio 3: Sistema Integrado (UART + FreeRTOS + I2C + OLED)](./DEBER5_SE/TAREA_53/)
-* **Funcionamiento técnico:** Es el proyecto integrador que unifica todos los conceptos anteriores en un entorno multitarea avanzado.
-* **Distribución en Núcleos (`xTaskCreatePinnedToCore`):** Las tareas están repartidas de forma óptima entre los núcleos del ESP32:
-  * **Tarea UART:** Captura de forma asíncrona los comandos ingresados por el usuario.
-  * **Tarea LED / Hardware:** Gestiona la cola de mensajes (*Queue*) y permite conmutar el estado del LED tanto por comandos virtuales como mediante un **pulsador físico local (GPIO 13)** con lógica antirrebote.
-  * **Tarea de Reporte:** Realiza la lectura analógica del potenciómetro y emite reportes periódicos automatizados.
-  * **Tarea OLED (I2C):** Controla la pantalla mediante los drivers nativos del controlador **SSD1306** (`ssd1306.c` / `ssd1306.h`). Renderiza en tiempo real una **gráfica de líneas de tiempo estilo osciloscopio (T1 a T4)** para visualizar la actividad dinámica de los hilos, protegiendo el intercambio de datos mediante semáforos tipo **Mutex**.
+## 📋 Introducción General
+Este documento técnico recopila la implementación y el análisis de los sistemas embebidos desarrollados para la placa ESP32, enfocados en la comunicación serial avanzada, la gestión de periféricos de hardware mediante drivers nativos, la concurrencia en tiempo real con FreeRTOS y la integración de interfaces visuales por bus I2C. A continuación, se detalla exhaustivamente el **Ejercicio 1**.
 
 ---
 
-## 🛠️ Requisitos Técnicos y Entorno
-* **Hardware simulado:** ESP32 DevKit V1, pantalla OLED SSD1306 (128x64), potenciómetro y LEDs indicadores.
-* **Entorno de desarrollo:** Visual Studio Code con **PlatformIO IDE**.
-* **Frameworks:** Arduino / ESP-IDF.
+## ⚙️ EJERCICIO 1: Sistema de Comandos por UART2
+
+### 1. Descripción del Ejercicio
+El Ejercicio 1 implementa un sistema robusto de comunicación serial basado en el puerto **UART2** del microcontrolador ESP32 utilizando los drivers nativos de **ESP-IDF**. El sistema opera como un intérprete de comandos interactivo capaz de recibir cadenas de texto de forma no bloqueante a través de un búfer dedicado, procesar la solicitud del usuario, controlar un pin de propósito general (GPIO) vinculado a un LED y retornar respuestas formateadas sin comprometer ciclos de procesamiento del sistema.
+
+### 2. Explicación del Funcionamiento del Sistema
+El funcionamiento del firmware se divide en dos fases principales: la inicialización de los controladores y el bucle operativo asíncrono.
+
+* **Inicialización de Periféricos:** Al arrancar el sistema dentro de `app_main`, se configuran los pines físicos de transmisión y recepción (`GPIO 17` para TX y `GPIO 16` para RX) junto con el controlador UART2 a una velocidad de 115200 baudios. Asimismo, se inicializa el pin del LED como salida digital en estado bajo.
+* **Lectura No Bloqueante:** En el núcleo del bucle infinito, la función `uart_read_bytes` se ejecuta con un tiempo de espera (*timeout*) de 100 ms. Esto permite que el ESP32 busque datos en el búfer serial sin bloquear la ejecución si no hay tramas disponibles, permitiendo la integración de retardos de control de rendimiento (`vTaskDelay`).
+* **Intérprete y Filtrado de Comandos:** Cuando se reciben bytes, se añade un terminador nulo para asegurar la compatibilidad con cadenas de caracteres en C (`strings`). La función `strip_newline` se encarga de eliminar los caracteres de retorno de carro (`\r`) o salto de línea (`\n`). Posteriormente, la función `process_command` compara la cadena ingresada mediante `strcmp` y direcciona la lógica hacia el comando correspondiente (`status`, `led on`, `led off`, `info` o `reset`), incrementando el contador global de comandos y emitiendo una respuesta estructurada de vuelta por el canal UART2.
 
 ---
 
-## ⚙️ Instrucciones de Ejecución
-1. Clona este repositorio o descárgalo en tu equipo.
-2. Abre la carpeta del proyecto en **Visual Studio Code**.
-3. Asegúrate de tener instalada la extensión de **PlatformIO**.
-4. Compila y carga el proyecto utilizando las opciones de **Clean** y **Build** de PlatformIO.
+### 3. Diagrama de Flujo y Arquitectura del Sistema
+
+```text
+       [ INICIO: app_main() ]
+                 │
+                 ▼
+     [ Configurar UART2 y GPIO LED ]
+                 │
+                 ▼
+       ┌──► [ BUCLE PRINCIPAL ]
+       │         │
+       │         ├─► ¿Llegaron datos por UART2? (Timeout: 100ms)
+       │         │     ├── SÍ ──► [ Leer bytes y limpiar saltos de línea ]
+       │         │     │               │
+       │         │     │               ▼
+       │         │     │        [ process_command() ]
+       │         │     │               │
+       │         │     │               ├─► "status" ──► Enviar reporte detallado
+       │         │     │               ├─► "led on" ──► Encender LED (GPIO 2)
+       │         │     │               ├─► "led off" ─► Apagar LED (GPIO 2)
+       │         │     │               ├─► "info" ────► Mostrar baudios y contador
+       │         │     │               ├─► "reset" ───► Reiniciar variables lógicas
+       │         │     │               └─► OTROS ─────► Enviar error de comando
+       │         │     │
+       │         │     └── NO ──┐
+       │         │              │
+       │         ▼              ▼
+       │   [ vTaskDelay(10ms) ] ◄─────┘
+       │         │
+       └─────────┘
+
+
+
+| Nombre de la Variable | Tipo de Dato | Alcance | Descripción Funcional |
+| :--- | :--- | :--- | :--- |
+| `command_counter` | `int` | Global | Almacena el número total de comandos válidos procesados desde el arranque o el último reseteo. |
+| `led_state` | `bool` | Global | Bandera lógica que refleja el estado actual del LED (`true` si está encendido, `false` si está apagado). |
+| `system_status_ok` | `bool` | Global | Indicador de la salud general del sistema de comandos (`true` para óptimo, `false` en error). |
+| `rx_data` | `uint8_t[]` | Local (`app_main`) | Búfer de memoria estática encargado de almacenar temporalmente los bytes crudos leídos del puerto serie. |
+
+| Nombre de la Función | Parámetros de Entrada | Valor de Retorno | Descripción Detallada |
+| :--- | :--- | :--- | :--- |
+| `uart_config_custom` | `uart_port_t`, `int`, `uart_word_length_t`, `uart_parity_t`, `uart_stop_bits_t` | `void` | Borra la configuración previa del UART especificado, aplica los parámetros de baudios, paridad, bits de parada y reasigna los pines físicos TX/RX. |
+| `led_config` | `void` | `void` | Resetea el pin del LED mediante el driver GPIO de ESP-IDF, lo configura explícitamente como salida digital y establece su nivel inicial en cero. |
+| `send_uart_response` | `const char*` | `void` | Toma una cadena de texto, calcula su longitud y la escribe a través del canal UART2 agregando automáticamente un retorno de carro y salto de línea (`\r\n`). |
+| `strip_newline` | `char*` | `void` | Analiza el final de la cadena de caracteres recibida y remueve de forma segura los caracteres invisibles de fin de línea (`\r`, `\n`) para permitir una comparación limpia. |
+| `process_command` | `char*` | `void` | Núcleo de control lógico; limpia la cadena, incrementa el contador de comandos y evalúa mediante bloques condicionales qué acción ejecutar sobre el hardware o las variables internas. |
