@@ -59,17 +59,21 @@ El funcionamiento del firmware se divide en dos fases principales: la inicializa
 
 
 
-| Nombre de la Variable | Tipo de Dato | Alcance | Descripción Funcional |
+### 📊 Variables Clave del Sistema
+
+| Variable | Tipo | Alcance | Descripción |
 | :--- | :--- | :--- | :--- |
 | `command_counter` | `int` | Global | Almacena el número total de comandos válidos procesados desde el arranque o el último reseteo. |
-| `led_state` | `bool` | Global | Bandera lógica que refleja el estado actual del LED (`true` si está encendido, `false` si está apagado). |
+| `led_state` | `bool` | Global | Bandera lógica que refleja el estado actual del LED (`true` encendido, `false` apagado). |
 | `system_status_ok` | `bool` | Global | Indicador de la salud general del sistema de comandos (`true` para óptimo, `false` en error). |
-| `rx_data` | `uint8_t[]` | Local (`app_main`) | Búfer de memoria estática encargado de almacenar temporalmente los bytes crudos leídos del puerto serie. |
+| `rx_data` | `uint8_t[]` | Local | Búfer de memoria estática encargado de almacenar temporalmente los bytes crudos leídos del puerto serie. |
 
-| Nombre de la Función | Parámetros de Entrada | Valor de Retorno | Descripción Detallada |
+### 🛠️ Funciones Principales
+
+| Función | Parámetros | Retorno | Descripción Detallada |
 | :--- | :--- | :--- | :--- |
-| `uart_config_custom` | `uart_port_t`, `int`, `uart_word_length_t`, `uart_parity_t`, `uart_stop_bits_t` | `void` | Borra la configuración previa del UART especificado, aplica los parámetros de baudios, paridad, bits de parada y reasigna los pines físicos TX/RX. |
-| `led_config` | `void` | `void` | Resetea el pin del LED mediante el driver GPIO de ESP-IDF, lo configura explícitamente como salida digital y establece su nivel inicial en cero. |
-| `send_uart_response` | `const char*` | `void` | Toma una cadena de texto, calcula su longitud y la escribe a través del canal UART2 agregando automáticamente un retorno de carro y salto de línea (`\r\n`). |
-| `strip_newline` | `char*` | `void` | Analiza el final de la cadena de caracteres recibida y remueve de forma segura los caracteres invisibles de fin de línea (`\r`, `\n`) para permitir una comparación limpia. |
-| `process_command` | `char*` | `void` | Núcleo de control lógico; limpia la cadena, incrementa el contador de comandos y evalúa mediante bloques condicionales qué acción ejecutar sobre el hardware o las variables internas. |
+| `uart_config_custom` | `uart_port_t, int, ...` | `void` | Borra la configuración previa del UART, aplica baudios, paridad y reasigna pines TX/RX. |
+| `led_config` | `void` | `void` | Resetea el pin del LED, lo configura como salida digital y establece su nivel inicial en cero. |
+| `send_uart_response` | `const char*` | `void` | Toma una cadena de texto, calcula su longitud y la escribe por UART2 con salto de línea. |
+| `strip_newline` | `char*` | `void` | Analiza el final de la cadena de caracteres y remueve de forma segura los caracteres `\r` o `\n`. |
+| `process_command` | `char*` | `void` | Núcleo de control lógico; limpia la cadena, incrementa contadores y evalúa las acciones del hardware. |
