@@ -1,0 +1,305 @@
+{
+  "version": 1,
+  "author": "Stefano",
+  "editor": "wokwi",
+  "parts": [
+    {
+      "type": "wokwi-breadboard-half",
+      "id": "bb1",
+      "top": -243,
+      "left": -93.2,
+      "attrs": {}
+    },
+    {
+      "type": "wokwi-esp32-devkit-v1",
+      "id": "esp",
+      "top": 9.52,
+      "left": 58.59,
+      "attrs": {}
+    },
+    {
+      "type": "board-ssd1306",
+      "id": "oled1",
+      "top": 18.14,
+      "left": 249.36,
+      "attrs": {
+        "i2cAddress": "0x3c"
+      }
+    },
+    {
+      "type": "wokwi-potentiometer",
+      "id": "pot1",
+      "top": -193.3,
+      "left": 105.4,
+      "attrs": {}
+    },
+    {
+      "type": "wokwi-led",
+      "id": "led1",
+      "top": -147.6,
+      "left": -34.6,
+      "attrs": {
+        "color": "green"
+      }
+    },
+    {
+      "type": "wokwi-led",
+      "id": "led2",
+      "top": -147.6,
+      "left": -73,
+      "attrs": {
+        "color": "red"
+      }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn1",
+      "top": -163.8,
+      "left": 12.6,
+      "rotate": 90,
+      "attrs": {
+        "color": "green"
+      }
+    }
+  ],
+  "connections": [
+    [
+      "esp:TX0",
+      "$serialMonitor:RX",
+      "",
+      []
+    ],
+    [
+      "esp:RX0",
+      "$serialMonitor:TX",
+      "",
+      []
+    ],
+    [
+      "oled1:SDA",
+      "esp:D21",
+      "blue",
+      [
+        "h0"
+      ]
+    ],
+    [
+      "esp:D22",
+      "oled1:SCL",
+      "orange",
+      [
+        "h27.4",
+        "v35.12"
+      ]
+    ],
+    [
+      "oled1:GND",
+      "bb1:bn.22",
+      "black",
+      [
+        "h-29.55",
+        "v-57.25",
+        "h-43.01"
+      ]
+    ],
+    [
+      "oled1:VCC",
+      "bb1:bp.21",
+      "red",
+      [
+        "h-43.51",
+        "v-54.93",
+        "h-38.65"
+      ]
+    ],
+    [
+      "bb1:2b.j",
+      "bb1:bn.1",
+      "black",
+      [
+        "v0"
+      ]
+    ],
+    [
+      "bb1:6b.j",
+      "bb1:bn.5",
+      "black",
+      [
+        "v0"
+      ]
+    ],
+    [
+      "bb1:3b.j",
+      "esp:D33",
+      "blue",
+      [
+        "v0"
+      ]
+    ],
+    [
+      "bb1:7b.j",
+      "esp:D32",
+      "purple",
+      [
+        "v0"
+      ]
+    ],
+    [
+      "esp:GND.2",
+      "bb1:bn.8",
+      "black",
+      [
+        "h0"
+      ]
+    ],
+    [
+      "esp:VIN",
+      "bb1:bp.7",
+      "red",
+      [
+        "h0"
+      ]
+    ],
+    [
+      "bb1:bn.25",
+      "bb1:tn.25",
+      "black",
+      [
+        "v0"
+      ]
+    ],
+    [
+      "bb1:14t.a",
+      "bb1:tn.11",
+      "black",
+      [
+        "v0"
+      ]
+    ],
+    [
+      "bb1:12t.a",
+      "esp:D13",
+      "orange",
+      [
+        "v-64.27",
+        "h-160.41",
+        "v405.96"
+      ]
+    ],
+    [
+      "bb1:24b.j",
+      "bb1:bp.20",
+      "red",
+      [
+        "v0"
+      ]
+    ],
+    [
+      "bb1:22b.j",
+      "bb1:bn.18",
+      "black",
+      [
+        "v0"
+      ]
+    ],
+    [
+      "bb1:23b.j",
+      "esp:D34",
+      "magenta",
+      [
+        "v85.74",
+        "h-102.77",
+        "v63.28"
+      ]
+    ],
+    [
+      "pot1:GND",
+      "bb1:22b.f",
+      "",
+      [
+        "$bb"
+      ]
+    ],
+    [
+      "pot1:SIG",
+      "bb1:23b.f",
+      "",
+      [
+        "$bb"
+      ]
+    ],
+    [
+      "pot1:VCC",
+      "bb1:24b.f",
+      "",
+      [
+        "$bb"
+      ]
+    ],
+    [
+      "led1:A",
+      "bb1:7b.h",
+      "",
+      [
+        "$bb"
+      ]
+    ],
+    [
+      "led1:C",
+      "bb1:6b.h",
+      "",
+      [
+        "$bb"
+      ]
+    ],
+    [
+      "led2:A",
+      "bb1:3b.h",
+      "",
+      [
+        "$bb"
+      ]
+    ],
+    [
+      "led2:C",
+      "bb1:2b.h",
+      "",
+      [
+        "$bb"
+      ]
+    ],
+    [
+      "btn1:1.l",
+      "bb1:14t.c",
+      "",
+      [
+        "$bb"
+      ]
+    ],
+    [
+      "btn1:2.l",
+      "bb1:12t.c",
+      "",
+      [
+        "$bb"
+      ]
+    ],
+    [
+      "btn1:1.r",
+      "bb1:14b.h",
+      "",
+      [
+        "$bb"
+      ]
+    ],
+    [
+      "btn1:2.r",
+      "bb1:12b.h",
+      "",
+      [
+        "$bb"
+      ]
+    ]
+  ],
+  "dependencies": {}
+}
