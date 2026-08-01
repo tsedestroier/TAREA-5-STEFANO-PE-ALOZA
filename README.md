@@ -11,11 +11,11 @@ Repositorio oficial con la implementación de los ejercicios prácticos desarrol
 
 Haz clic en cualquier ejercicio para revisar directamente su código fuente:
 
-* **[Ejercicio 1: Sistema de Comandos por UART2](./TAREA_5/)**
+* **[Ejercicio 1: Sistema de Comandos por UART2](./DEBER_SE/TAREA_5/)**
   * *Descripción:* Implementación de comunicación serie mediante UART2 usando drivers nativos de ESP-IDF, lectura no bloqueante con buffers y procesamiento de comandos (`status`, `led on`, `led off`, `info`, `reset`).
-* **[Ejercicio 2: Multitarea con FreeRTOS](./TAREA_52/)**
+* **[Ejercicio 2: Multitarea con FreeRTOS](./DEBER_SE/TAREA_52/)**
   * *Descripción:* Creación y distribución de tareas concurrentes utilizando FreeRTOS en múltiples núcleos del ESP32.
-* **[Ejercicio 3: Sistema Integrado (UART + FreeRTOS + I2C + OLED)](./TAREA_53/)**
+* **[Ejercicio 3: Sistema Integrado (UART + FreeRTOS + I2C + OLED)](./DEBER_SE//TAREA_53/)**
   * *Descripción:* Proyecto integrador que combina la recepción de comandos por UART, control de hardware (LEDs y pulsador físico), lectura de sensores analógicos y renderizado en tiempo real de una gráfica de líneas de tiempo en una pantalla **OLED SSD1306** por I2C.
 
 ---
