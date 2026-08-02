@@ -8,11 +8,12 @@
 ---
 
 ## 📋 Introducción General
-Este documento técnico recopila la implementación y el análisis de los sistemas embebidos desarrollados para la placa ESP32, enfocados en la comunicación serial avanzada, la gestión de periféricos de hardware mediante drivers nativos, la concurrencia en tiempo real con FreeRTOS y la integración de interfaces visuales por bus I2C. A continuación, se detalla exhaustivamente el **Ejercicio 1**.
+Este documento técnico recopila la implementación y el análisis de los sistemas embebidos desarrollados para la placa ESP32, enfocados en la comunicación serial avanzada, la gestión de periféricos de hardware mediante drivers nativos, la concurrencia en tiempo real con FreeRTOS y la integración de interfaces visuales por bus I2C. A continuación, se detalla exhaustivamente el funcionamiento de cada ejercicio.
 
 ---
 
 ## ⚙️ EJERCICIO 1: Sistema de Comandos por UART2
+**[📁 Ver código fuente del Ejercicio 1](./DEBER5_SE/TAREA_5/)**
 
 ### 1. Descripción del Ejercicio
 El Ejercicio 1 implementa un sistema robusto de comunicación serial basado en el puerto **UART2** del microcontrolador ESP32 utilizando los drivers nativos de **ESP-IDF**. El sistema opera como un intérprete de comandos interactivo capaz de recibir cadenas de texto de forma no bloqueante a través de un búfer dedicado, procesar la solicitud del usuario, controlar un pin de propósito general (GPIO) vinculado a un LED y retornar respuestas formateadas sin comprometer ciclos de procesamiento del sistema.
@@ -56,24 +57,3 @@ El funcionamiento del firmware se divide en dos fases principales: la inicializa
        │   [ vTaskDelay(10ms) ] ◄─────┘
        │         │
        └─────────┘
-
-
-
-### 📊 Variables Clave del Sistema
-
-| Variable | Tipo | Alcance | Descripción |
-| :--- | :--- | :--- | :--- |
-| `command_counter` | `int` | Global | Almacena el número total de comandos válidos procesados desde el arranque o el último reseteo. |
-| `led_state` | `bool` | Global | Bandera lógica que refleja el estado actual del LED (`true` encendido, `false` apagado). |
-| `system_status_ok` | `bool` | Global | Indicador de la salud general del sistema de comandos (`true` para óptimo, `false` en error). |
-| `rx_data` | `uint8_t[]` | Local | Búfer de memoria estática encargado de almacenar temporalmente los bytes crudos leídos del puerto serie. |
-
-### 🛠️ Funciones Principales
-
-| Función | Parámetros | Retorno | Descripción Detallada |
-| :--- | :--- | :--- | :--- |
-| `uart_config_custom` | `uart_port_t, int, ...` | `void` | Borra la configuración previa del UART, aplica baudios, paridad y reasigna pines TX/RX. |
-| `led_config` | `void` | `void` | Resetea el pin del LED, lo configura como salida digital y establece su nivel inicial en cero. |
-| `send_uart_response` | `const char*` | `void` | Toma una cadena de texto, calcula su longitud y la escribe por UART2 con salto de línea. |
-| `strip_newline` | `char*` | `void` | Analiza el final de la cadena de caracteres y remueve de forma segura los caracteres `\r` o `\n`. |
-| `process_command` | `char*` | `void` | Núcleo de control lógico; limpia la cadena, incrementa contadores y evalúa las acciones del hardware. |
