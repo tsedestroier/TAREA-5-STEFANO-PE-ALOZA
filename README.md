@@ -1,7 +1,7 @@
 # Tarea: Sistemas Embebidos (ESP32 + FreeRTOS + I2C + UART)
 
 **Estudiante:** Stefano Peñaloza  
-**Enlace al Repositorio de GitHub:** [*(Insertar aquí el enlace a tu repositorio público de GitHub)*]  
+**Enlace al Repositorio de GitHub:** [*(https://github.com/tsedestroier/TAREA-5-STEFANO-PE-ALOZA/blob/main/README.md)*]  
 **Simulación en Wokwi:** [Ver Simulación](https://wokwi.com/projects/470989175279998977)  
 **Video de Demostración:** [Ver en YouTube](https://youtu.be/I-_zX-c1B3I)
 
